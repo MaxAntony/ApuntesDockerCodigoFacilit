@@ -1,0 +1,62 @@
+- docker container : lista a todos las opciones que tenemos para este comando
+- docker container ls : lista los contenedores (solo a los activos)
+- docker container ls --help : si tienes dudas hacerca de algun comando puedes usar --help
+- docker container ls -a : lista a todos los contenedores (lo averigue usando --help como arriba)
+    -la salida nos muestra diferentes parametros
+    CONTAINER ID : docker lo asigna automaticamente y id unico que diferencia a un contenedor de otro
+    IMAGE : indica la imagen que el contenedor utilizó
+    COMMAND : el comando que se ejecuta dentro del contenedor
+    CREATED : hace cuanto tiempo se genero el contenedor
+    STATUD : si el container esta activo o si esta detenido
+    PORTS : los puertos del contenedor, mas adelante se explicara mas
+    NAMES : nombre aleatorio que docker asigna a cada contenedor, podemos hacer referencia al contenedor usando al id o al nombre
+
+eliminar contenedor, primero listamos los contenedores y de ahi podemos ver el nombre o id
+- docker container rm <id || nombre_de_contenedor>
+
+si hay demasiadoas imagenes o contenedores y deseas eliminar todo puedes hacerlo de la sgt forma
+- docker image rm $(docker image ls -a -q)
+esto devuelve una lista de id y con rm se eliminan, aplica para contenedores, redes y volumenes o todo que necesite id para realizar una accion, tambien sirve para detener con stop o todo comando que requiera id para hacer una accion
+
+docker container run : este consta de 2 internamente:
+    -docker container create <nombre_de_imagen> : crea el contenedor, si listamos los contenedores veremos que esta con status created
+    -docker container start <container_id || nombre_de_contenedor> : inicia el contenedor, si listamos ese contenedor en especifico se ve que esta en exit automaticamente por que inicio el script y termino y no tiene procesos en segundo plano se apaga automaticamente, al usar start no veremos por ejemplo la salida 'hola mundo de un contenedor, esto solo sucede con el comando run por que este envia la salida al terminal, si desearias ver la salida pero ejecutaste start puedes verlo en los logs
+        - docker container logs <container_id>
+estos comandos los podemos ver usando 'docker container run --help'
+
+detener contenedor
+-docker container stop <id || nombre_de_contenedor> : detiene a uno o mas contenedores que se estan ejecutando
+
+
+====================================================
+MODO INTERACTIVO
+
+tags: si queremos descargar ubuntu del dockerhub vermos que tiene muchos tags, estos sirven para identificar las diferentes versiones de la imagen, por defecto cuando no especificamos una tag al momento de hacer pull se elige la tag latest,  que en el ejemplo de ubuntu seria la version 18.04(notese que es la lts o la estable), latest es la ultima version soportada de la imagen,  mientras que tambien  tiene una tag llamada rolling que tiene la imagen de ubuntu 19.10 (algo asi como la version de pronto acceso)
+si queremos dedcargar la iamgen con el tag rolling tenemos que usar ':' asi:
+    - docker image pull ubuntu:rolling
+
+si listamos las imagenes veremos que en la seccion tags se muestra el tag escogido
+
+para correr una imagen con un tag especifico
+- docker container run ubuntu:latest
+
+es recomendable que siempre uses el tag por que al momento de listar los contenedores mostrara el tag y sabremos cual esta usando
+Al correr este comando y listamos todos los contenedores veremos que el contenedor ya se detuvo, esto es por que el contenedor se ejecuta y termina como si de una rchivo script se tratase por que no tiene mas procesos corriendo de fondo, pero si por ejemplo ejecutamos el contenedor de nginx veremos que se queda pegado y si listamos los contenedores en otra terminal veremos que esta activa, esto es por que si esta corriendo un servicio de fondo, cancelamos el proceso de nginx y volvemos a listar los contenedores veremos que este se detuvo
+
+Para mantener a nuestro contenedor corriendo usaremos el modo interactivo de docker que es una forma de ejecutar una terminal dentro del contenedor
+para hcerlo usaremos:
+usaremos las opciones i(mantiene a la entrada estandar abierta) y t(permite generar una nueva terminal)
+    - estas opciones las puedes ver con: docker container run --help
+estas 2 opciones lo que hacen es generar un proceso en el contenedor y agregando una terminal a la misma
+
+- docker container run -it ubuntu
+al ejecutar este comando vemos que nos muestra otro prompt que pertenece a el contenedor ubuntu, pero si ponemos el comando exit en ese prompt y listamos los contenedores vemos que se ha detenido y esto es debido a que salimos del proceso directamente
+
+para solucionar esto usaremos otra opcion que es d(ejecuta al contenedor en segundo plano e imprime el id)
+- docker container run -itd ubuntu
+si listamos los contenedores vemos que se queda ejecutando
+
+al ejecutar normalmente nginx vemos que se queda pegado en la entrada estandar por lo que no podemos correr otros comandosy si cancelamos el proceso tambien termina
+para solucionar esto podemos mandar a nginx al segundo plano con:
+- docker container run -d nginx
+de esta manera podemos seguir ejecutando otros comandos por que la terminal no estara bloqueada

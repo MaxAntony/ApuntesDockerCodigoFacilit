@@ -1,0 +1,12 @@
+dos comandos:
+- docker image: si lo ejecutamos asi no ma veremos su ayuda
+    -con la opcion ls listamos las imagenes disponibles
+        -docker image ls
+    -con la opcion pull seguido de el nombre de la imagen buscara en el registro (por defecto DockerHub) y la descargara
+        -docker image pull fernando93d/hello
+
+- docker container: si lo ejecutamos asi no ma veremos su ayuda
+    -mas la opcion run y el nombre de la imagen permite crear un contenedor a partir de la imagen
+    para ver mas parametros puedes ver su ayuda 'docker container run --help'
+        -docker container run fernando93d/hello
+
